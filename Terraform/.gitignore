@@ -1,0 +1,3 @@
+vaultfile
+id_rsa.pub
+*.tfstate*
