@@ -1,0 +1,6 @@
+[submodule "AWX_Config"]
+	path = AWX_Config
+	url = https://gist.github.com/e890209d96f29e2019c70a2f9e06a862.git
+[submodule "Install_AWX"]
+	path = Install_AWX
+	url = https://github.com/JonTheNiceGuy/Install_AWX_And_Configure_It
