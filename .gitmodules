@@ -4,3 +4,6 @@
 [submodule "Install_AWX"]
 	path = Install_AWX
 	url = https://github.com/JonTheNiceGuy/Install_AWX_And_Configure_It
+[submodule "Install_Gitlab"]
+	path = Install_Gitlab
+	url = https://gist.github.com/14b5292a9ef6968c9fc92fd2df0c0ba3.git
