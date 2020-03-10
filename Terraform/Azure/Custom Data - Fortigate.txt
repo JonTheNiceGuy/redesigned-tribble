@@ -1,0 +1,9 @@
+config system admin
+edit ${vm_user}
+set ssh-public-key1 "${trimspace(key)}"
+set password ${vm_password}
+end
+config system global
+set hostname ${hostname}
+set timezone 25
+end

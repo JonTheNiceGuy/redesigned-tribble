@@ -1,12 +1,16 @@
 output "fqdn" {
   value = <<EOF
-awx.${aws_eip.awx.public_ip}.nip.io
-gitlab.${aws_eip.gitlab.public_ip}.nip.io
+awx.${aws_eip.awx.public_ip}.${var.dns_suffix}
+gitlab.${aws_eip.gitlab.public_ip}.${var.dns_suffix}
 EOF
 }
 
 output "awxip" {
   value = aws_eip.awx.public_ip
+}
+
+output "gitlabip" {
+  value = aws_eip.gitlab.public_ip
 }
 
 output "admin_password" {

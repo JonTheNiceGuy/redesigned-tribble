@@ -21,8 +21,8 @@ resource "aws_network_interface" "awx" {
 resource "aws_instance" "awx" {
   depends_on = [aws_network_interface.awx]
   tags = {
-    Name                    = "vm${var.modulename}awx"
-    OS                      = "ubuntu"
+    Name = "awx"
+    FQDN = "awx.${aws_eip.awx.public_ip}.${var.dns_suffix}"
   }
 
   ami           = var.ami_ubuntu1804
@@ -36,7 +36,7 @@ resource "aws_instance" "awx" {
 
   user_data = <<USERDATA
 #! /bin/bash
-hostnamectl set-hostname awx.${aws_eip.awx.public_ip}.nip.io
+hostnamectl set-hostname awx.${aws_eip.awx.public_ip}.${var.dns_suffix}
 #######################################################################################
 # Install ansible dependencies
 #######################################################################################
@@ -82,6 +82,6 @@ USERDATA
   # and notes from https://github.com/hashicorp/terraform/issues/4668
   # -w '%%' syntax from https://github.com/terraform-providers/terraform-provider-template/issues/50
   provisioner "local-exec" {
-    command = "until [ $(curl -s -w '%%{http_code}' https://awx.${aws_eip.awx.public_ip}.nip.io/api/ -o /dev/null) -eq 200 ] ; do curl -s -w 'Response from awx.${aws_eip.awx.public_ip}.nip.io was %%{http_code}\n' https://awx.${aws_eip.awx.public_ip}.nip.io/api/ -o /dev/null ; sleep 5 ; done"
+    command = "until [ $(curl -k -s -w '%%{http_code}' https://awx.${aws_eip.awx.public_ip}.${var.dns_suffix}/api/ -o /dev/null) -eq 200 ] ; do curl -k -s -w 'Response from awx.${aws_eip.awx.public_ip}.${var.dns_suffix} was %%{http_code}\n' https://awx.${aws_eip.awx.public_ip}.${var.dns_suffix}/api/ -o /dev/null ; sleep 5 ; done"
   }
 }

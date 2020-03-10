@@ -4,6 +4,7 @@ variable "myip" {}
 variable "ami_ubuntu1804" {}
 variable "admin_password" {}
 variable "key" {}
+variable "dns_suffix" {}
 
 resource "aws_key_pair" "service" {
   key_name = var.modulename

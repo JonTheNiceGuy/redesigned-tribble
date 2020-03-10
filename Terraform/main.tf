@@ -8,7 +8,19 @@ data "http" "icanhazip" {
 
 # Default Provider
 provider "aws" {
+  version = ">=2.52.0"
   region = "us-east-1"
 }
 
-provider "azurerm" {}
+provider "http" {
+  version = ">=1.1"
+}
+
+provider "local" {
+  version = ">=1.4.0"
+}
+
+provider "azurerm" {
+  version = ">=2.0.0"
+  features {}
+}

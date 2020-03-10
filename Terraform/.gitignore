@@ -1,3 +1,5 @@
 vaultfile
 id_rsa.pub
 *.tfstate*
+admin_password
+override.tf
