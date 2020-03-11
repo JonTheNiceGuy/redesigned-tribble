@@ -6,5 +6,9 @@ set accprofile super_admin
 end
 config system global
 set hostname ${hostname}
-set timezone 25
+set timezone 80
+set admintimeout 30
+end
+config system replacemsg admin pre_admin-disclaimer-text
+unset buffer
 end
