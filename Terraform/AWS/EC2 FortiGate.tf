@@ -21,6 +21,7 @@ resource "aws_instance" "fgt" {
     Name = "${var.modulename}fgt"
     fortigate = "true"
     fortigate_web = "true"
+    fortigate_admin = "true"
   }
 
   ami           = var.ami_fortigate623
