@@ -1,0 +1,42 @@
+#! /bin/bash
+hostnamectl set-hostname awx.${public_ip}.${dns_suffix}
+#######################################################################################
+# Install ansible dependencies
+#######################################################################################
+apt-get update
+apt-get install -y python3-pip python-pip
+pip3 install ansible ansible-tower-cli
+pip2 install docker docker-compose
+#######################################################################################
+# Prepare AWX install
+#######################################################################################
+git clone https://github.com/JonTheNiceGuy/Install_AWX_And_Configure_It /tmp/build_playbook
+git clone https://gist.github.com/e890209d96f29e2019c70a2f9e06a862.git /tmp/playbook_config
+cd /tmp/build_playbook
+ln -s /tmp/playbook_config/EC2_AWX_secrets.yml secrets.yml
+ln -s /tmp/playbook_config/EC2_AWX_config.json run.json
+mkdir /root/awx_build
+echo "#!/bin/bash" > /root/awx_build/creds
+echo "export AWX_Hostname=$(hostname)" >> /root/awx_build/creds
+echo "export AWX_Password=\"${admin_password}\"" >> /root/awx_build/creds
+echo "echo \"${vaultfile}\" > /tmp/build_playbook/vaultfile" >> /root/awx_build/creds
+echo "echo \"{
+  'ansible_fqdn':'$(hostname)',
+  'admin_password':'${admin_password}'
+}\" > /tmp/build_playbook/extra.json" >> /root/awx_build/creds
+echo '$*' >> /root/awx_build/creds
+chmod +x /root/awx_build/creds
+/root/awx_build/creds ansible-playbook prepare_awx_install.yml -e "@/tmp/build_playbook/extra.json"
+#######################################################################################
+# Run AWX Install
+#######################################################################################
+cd /opt/awx/installer
+ansible-playbook -i inventory install.yml
+#######################################################################################
+# Perform post-config of AWX
+#######################################################################################
+cd /tmp/build_playbook
+/root/awx_build/creds bash ./run.sh
+ansible-playbook /tmp/build_playbook/break_tls.yml -e '{"admin_password":"${admin_password}"}'
+rm vaultfile
+rm extra.json

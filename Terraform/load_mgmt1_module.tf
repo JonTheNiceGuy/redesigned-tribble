@@ -1,6 +1,6 @@
 module "Mgmt1" {
   source                    = "./Mgmt1"
-  modulename                = "Mgmt1"
+  modulename                = "CME"
   public_first_three_octets = "192.168.10"
   ami_ubuntu1804            = data.aws_ami.ubuntu.id
   myip                      = "${trimspace(data.http.icanhazip.body)}/32"
@@ -10,8 +10,10 @@ module "Mgmt1" {
   dns_suffix                = var.dns_suffix
 }
 
-output "Mgmt1_IPs" {
-  value = <<EOF
-${module.Mgmt1.ips}
-EOF
+output "Mgmt1" {
+  value = <<OUTPUT
+FQDNs are
+AWX: ${module.Mgmt1.awxfqdn} (use ${module.Mgmt1.awxuser})
+GITLAB: ${module.Mgmt1.gitlabfqdn} (use ${module.Mgmt1.gitlabuser})
+OUTPUT
 }

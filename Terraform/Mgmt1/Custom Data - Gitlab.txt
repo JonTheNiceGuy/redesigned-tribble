@@ -1,0 +1,11 @@
+#! /bin/bash
+hostnamectl set-hostname gitlab.${public_ip}.${dns_suffix}
+#######################################################################################
+# Install ansible dependencies
+#######################################################################################
+apt-get update
+apt-get install -y python3-pip 
+pip3 install ansible
+git clone https://gist.github.com/14b5292a9ef6968c9fc92fd2df0c0ba3.git /tmp/gitlab-install
+cd /tmp/gitlab-install
+ansible-playbook install.yml -e '{"awx_password":"${admin_password}","admin_password":"${admin_password}","system_fqdn":"gitlab.${public_ip}.${dns_suffix}"}'

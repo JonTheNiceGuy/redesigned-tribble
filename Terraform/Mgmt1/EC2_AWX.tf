@@ -34,49 +34,7 @@ resource "aws_instance" "awx" {
     device_index         = 0
   }
 
-  user_data = <<USERDATA
-#! /bin/bash
-hostnamectl set-hostname awx.${aws_eip.awx.public_ip}.${var.dns_suffix}
-#######################################################################################
-# Install ansible dependencies
-#######################################################################################
-apt-get update
-apt-get install -y python3-pip python-pip
-pip3 install ansible ansible-tower-cli
-pip2 install docker docker-compose
-#######################################################################################
-# Prepare AWX install
-#######################################################################################
-git clone https://github.com/JonTheNiceGuy/Install_AWX_And_Configure_It /tmp/build_playbook
-git clone https://gist.github.com/e890209d96f29e2019c70a2f9e06a862.git /tmp/playbook_config
-cd /tmp/build_playbook
-ln -s /tmp/playbook_config/EC2_AWX_secrets.yml secrets.yml
-ln -s /tmp/playbook_config/EC2_AWX_config.json run.json
-mkdir /root/awx_build
-echo "#!/bin/bash" > /root/awx_build/creds
-echo "export AWX_Hostname=$(hostname)" >> /root/awx_build/creds
-echo "export AWX_Password=\"${var.admin_password}\"" >> /root/awx_build/creds
-echo "echo \"${var.VaultFile}\" > /tmp/build_playbook/vaultfile" >> /root/awx_build/creds
-echo "echo \"{
-  'ansible_fqdn':'$(hostname)',
-  'admin_password':'${var.admin_password}'
-}\" > /tmp/build_playbook/extra.json" >> /root/awx_build/creds
-echo '$*' >> /root/awx_build/creds
-chmod +x /root/awx_build/creds
-/root/awx_build/creds ansible-playbook prepare_awx_install.yml -e "@/tmp/build_playbook/extra.json"
-#######################################################################################
-# Run AWX Install
-#######################################################################################
-cd /opt/awx/installer
-ansible-playbook -i inventory install.yml
-#######################################################################################
-# Perform post-config of AWX
-#######################################################################################
-cd /tmp/build_playbook
-/root/awx_build/creds bash ./run.sh
-rm vaultfile
-rm extra.json
-USERDATA
+  user_data = templatefile("${path.module}/Custom Data - AWX.txt", {admin_password = var.admin_password, vaultfile = var.VaultFile, public_ip = aws_eip.awx.public_ip, dns_suffix = var.dns_suffix})
 
   # Based on https://stackoverflow.com/a/12748070
   # and notes from https://github.com/hashicorp/terraform/issues/4668
@@ -84,4 +42,16 @@ USERDATA
   provisioner "local-exec" {
     command = "until [ $(curl -k -s -w '%%{http_code}' https://awx.${aws_eip.awx.public_ip}.${var.dns_suffix}/api/ -o /dev/null) -eq 200 ] ; do curl -k -s -w 'Response from awx.${aws_eip.awx.public_ip}.${var.dns_suffix} was %%{http_code}\n' https://awx.${aws_eip.awx.public_ip}.${var.dns_suffix}/api/ -o /dev/null ; sleep 5 ; done"
   }
+}
+
+output "awxip" {
+  value = aws_eip.awx.public_ip
+}
+
+output "awxfqdn" {
+  value = "awx.${aws_eip.awx.public_ip}.${var.dns_suffix}"
+}
+
+output "awxuser" {
+  value = "admin"
 }

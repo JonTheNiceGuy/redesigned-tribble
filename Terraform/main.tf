@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.12"
+  required_version = "~> 0.12"
 }
 
 data "http" "icanhazip" {
@@ -8,19 +8,19 @@ data "http" "icanhazip" {
 
 # Default Provider
 provider "aws" {
-  version = ">=2.52.0"
+  version = "~> 2.52.0"
   region = "us-east-1"
 }
 
 provider "http" {
-  version = ">=1.1"
+  version = "~> 1.1"
 }
 
 provider "local" {
-  version = ">=1.4.0"
+  version = "~> 1.4.0"
 }
 
 provider "azurerm" {
-  version = ">=2.0.0"
+  version = "~> 2.0.0"
   features {}
 }

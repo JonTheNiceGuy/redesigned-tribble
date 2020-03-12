@@ -85,30 +85,3 @@ resource "aws_security_group_rule" "CommonManagementSG_SSH_From_MyIP" {
   cidr_blocks = [var.myip]
   security_group_id = aws_security_group.CommonManagementSG.id
 }
-
-resource "aws_security_group_rule" "CommonManagementSG_HighSSH_From_MyIP" {
-  type = "ingress"  
-  protocol = "tcp"
-  from_port = 2222
-  to_port = 2222
-  cidr_blocks = [var.myip]
-  security_group_id = aws_security_group.CommonManagementSG.id
-}
-
-resource "aws_security_group_rule" "CommonManagementSG_SSH_From_AWX_Public_IP" {
-  type = "ingress"  
-  protocol = "tcp"
-  from_port = 22
-  to_port = 22
-  cidr_blocks = ["${aws_eip.awx.public_ip}/32"]
-  security_group_id = aws_security_group.CommonManagementSG.id
-}
-
-resource "aws_security_group_rule" "CommonManagementSG_SSH_From_AWX_Private_IP" {
-  type = "ingress"  
-  protocol = "tcp"
-  from_port = 22
-  to_port = 22
-  cidr_blocks = ["${aws_instance.awx.private_ip}/32"]
-  security_group_id = aws_security_group.CommonManagementSG.id
-}
