@@ -1,3 +1,10 @@
+variable "modulename" {}
+variable "subnet" {}
+variable "security_groups" {}
+variable "dns_suffix" {}
+variable "ami_ubuntu1804" {}
+variable "admin_password" {}
+variable "ssh_key" {}
 variable "VaultFile" {}
 
 resource "aws_eip" "awx" {
@@ -10,12 +17,9 @@ resource "aws_eip_association" "awx" {
 }
 
 resource "aws_network_interface" "awx" {
-  depends_on = [aws_eip.awx]
-  subnet_id       = aws_subnet.Public.id
-  security_groups = [
-    aws_security_group.ServiceSG.id,
-    aws_security_group.CommonManagementSG.id
-  ]
+  depends_on      = [aws_eip.awx]
+  subnet_id       = var.subnet
+  security_groups = var.security_groups
 }
 
 resource "aws_instance" "awx" {
@@ -27,7 +31,7 @@ resource "aws_instance" "awx" {
 
   ami           = var.ami_ubuntu1804
   instance_type = "t2.medium"
-  key_name      = aws_key_pair.service.key_name
+  key_name      = var.ssh_key
 
   network_interface {
     network_interface_id = aws_network_interface.awx.id

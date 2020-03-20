@@ -1,3 +1,11 @@
+variable "modulename" {}
+variable "subnet" {}
+variable "security_groups" {}
+variable "dns_suffix" {}
+variable "ami_ubuntu1804" {}
+variable "admin_password" {}
+variable "ssh_key" {}
+
 resource "aws_eip" "gitlab" {
   vpc = true
 }
@@ -8,12 +16,9 @@ resource "aws_eip_association" "gitlab" {
 }
 
 resource "aws_network_interface" "gitlab" {
-  depends_on = [aws_eip.gitlab]
-  subnet_id       = aws_subnet.Public.id
-  security_groups = [
-    aws_security_group.ServiceSG.id,
-    aws_security_group.CommonManagementSG.id
-  ]
+  depends_on      = [aws_eip.gitlab]
+  subnet_id       = var.subnet
+  security_groups = var.security_groups
 }
 
 resource "aws_instance" "gitlab" {
@@ -25,7 +30,7 @@ resource "aws_instance" "gitlab" {
 
   ami           = var.ami_ubuntu1804
   instance_type = "t2.medium"
-  key_name      = aws_key_pair.service.key_name
+  key_name      = var.ssh_key
 
   network_interface {
     network_interface_id = aws_network_interface.gitlab.id
