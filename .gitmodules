@@ -7,3 +7,6 @@
 [submodule "Install_Gitlab"]
 	path = Install_Gitlab
 	url = https://gist.github.com/14b5292a9ef6968c9fc92fd2df0c0ba3.git
+[submodule "policy"]
+	path = policy
+	url = https://github.com/E-and-CS/SampleFortigatePolicy
