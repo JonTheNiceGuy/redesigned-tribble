@@ -25,18 +25,38 @@ echo "echo \"{
   'admin_password':'${admin_password}'
 }\" > /tmp/build_playbook/extra.json" >> /root/awx_build/creds
 echo '$*' >> /root/awx_build/creds
+echo 'if $? -gt 0 ]' >> /root/awx_build/creds
+echo 'then' >> /root/awx_build/creds
+echo '  exit $?' >> /root/awx_build/creds
+echo 'fi' >> /root/awx_build/creds
 chmod +x /root/awx_build/creds
 /root/awx_build/creds ansible-playbook prepare_awx_install.yml -e "@/tmp/build_playbook/extra.json"
+if [ $? -gt 0 ]
+then
+  exit $?
+fi
 #######################################################################################
 # Run AWX Install
 #######################################################################################
 cd /opt/awx/installer
 ansible-playbook -i inventory install.yml
+if [ $? -gt 0 ]
+then
+  exit $?
+fi
 #######################################################################################
 # Perform post-config of AWX
 #######################################################################################
 cd /tmp/build_playbook
 /root/awx_build/creds bash ./run.sh
+if [ $? -gt 0 ]
+then
+  exit $?
+fi
 ansible-playbook /tmp/build_playbook/break_tls.yml -e '{"admin_password":"${admin_password}"}'
+if [ $? -gt 0 ]
+then
+  exit $?
+fi
 rm vaultfile
 rm extra.json
