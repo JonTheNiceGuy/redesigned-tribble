@@ -11,9 +11,9 @@ pip2 install docker docker-compose
 # Prepare AWX install
 #######################################################################################
 git clone https://github.com/JonTheNiceGuy/Install_AWX_And_Configure_It /tmp/build_playbook
-if [ -n "${config_path}" ]
+if [ -n "${ConfigPath}" ]
 then
-  git clone ${config_path} /tmp/playbook_config
+  git clone ${ConfigPath} /tmp/playbook_config
   ln -s /tmp/playbook_config/EC2_AWX_secrets.yml secrets.yml
   ln -s /tmp/playbook_config/EC2_AWX_config.json run.json
 else

@@ -9,6 +9,7 @@ variable "VaultFile" {}
 variable "ConfigPath" {
   default = ""
 }
+variable "CommonMgmtSGID" {}
 
 resource "aws_eip" "awx" {
   vpc = true
@@ -61,4 +62,15 @@ output "awxfqdn" {
 
 output "awxuser" {
   value = "admin"
+}
+
+# Hack to get around the fact we don't know the public IP address of the AWX until this module is done
+
+resource "aws_security_group_rule" "CommonManagementSG_SSH_From_AWX" {
+  type = "ingress"  
+  protocol = "tcp"
+  from_port = 22
+  to_port = 22
+  cidr_blocks = ["${aws_eip.awx.public_ip}/32"]
+  security_group_id = var.CommonMgmtSGID
 }
