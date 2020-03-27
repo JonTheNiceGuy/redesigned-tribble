@@ -6,6 +6,9 @@ variable "ami_ubuntu1804" {}
 variable "admin_password" {}
 variable "ssh_key" {}
 variable "VaultFile" {}
+variable "ConfigPath" {
+  default = ""
+}
 
 resource "aws_eip" "awx" {
   vpc = true
@@ -38,7 +41,7 @@ resource "aws_instance" "awx" {
     device_index         = 0
   }
 
-  user_data = templatefile("${path.module}/Custom Data - AWX.txt", {admin_password = var.admin_password, vaultfile = var.VaultFile, public_ip = aws_eip.awx.public_ip, dns_suffix = var.dns_suffix})
+  user_data = templatefile("${path.module}/Custom Data - AWX.txt", {admin_password = var.admin_password, vaultfile = var.VaultFile, public_ip = aws_eip.awx.public_ip, dns_suffix = var.dns_suffix, ConfigPath = var.ConfigPath})
 
   # Based on https://stackoverflow.com/a/12748070
   # and notes from https://github.com/hashicorp/terraform/issues/4668

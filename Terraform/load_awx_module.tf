@@ -1,3 +1,7 @@
+variable "ConfigPath" {
+  default = ""
+}
+
 module "Mgmt_AWX" {
   source          = "./Mgmt_AWX"
   modulename      = "CME"
@@ -8,6 +12,7 @@ module "Mgmt_AWX" {
   admin_password  = trimspace(data.local_file.admin_password.content)
   ssh_key         = module.Mgmt_NW.ssh_key
   VaultFile       = data.local_file.vault_file.content
+  ConfigPath      = var.ConfigPath
 }
 
 output "Mgmt_AWX" {

@@ -11,19 +11,21 @@ pip2 install docker docker-compose
 # Prepare AWX install
 #######################################################################################
 git clone https://github.com/JonTheNiceGuy/Install_AWX_And_Configure_It /tmp/build_playbook
-git clone https://gist.github.com/e890209d96f29e2019c70a2f9e06a862.git /tmp/playbook_config
+if [ -n "${config_path}" ]
+then
+  git clone ${config_path} /tmp/playbook_config
+  ln -s /tmp/playbook_config/EC2_AWX_secrets.yml secrets.yml
+  ln -s /tmp/playbook_config/EC2_AWX_config.json run.json
+else
+  echo "{'ansible_fqdn':'$(hostname)','admin_password':'${admin_password}'}" > run.json
+fi
 cd /tmp/build_playbook
-ln -s /tmp/playbook_config/EC2_AWX_secrets.yml secrets.yml
-ln -s /tmp/playbook_config/EC2_AWX_config.json run.json
 mkdir /root/awx_build
 echo "#!/bin/bash" > /root/awx_build/creds
 echo "export AWX_Hostname=$(hostname)" >> /root/awx_build/creds
 echo "export AWX_Password=\"${admin_password}\"" >> /root/awx_build/creds
 echo "echo \"${vaultfile}\" > /tmp/build_playbook/vaultfile" >> /root/awx_build/creds
-echo "echo \"{
-  'ansible_fqdn':'$(hostname)',
-  'admin_password':'${admin_password}'
-}\" > /tmp/build_playbook/extra.json" >> /root/awx_build/creds
+echo "echo \"{'ansible_fqdn':'$(hostname)','admin_password':'${admin_password}'}\" > /tmp/build_playbook/extra.json" >> /root/awx_build/creds
 echo '$*' >> /root/awx_build/creds
 echo 'if $? -gt 0 ]' >> /root/awx_build/creds
 echo 'then' >> /root/awx_build/creds
