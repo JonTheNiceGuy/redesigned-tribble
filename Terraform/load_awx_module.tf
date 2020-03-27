@@ -13,6 +13,7 @@ module "Mgmt_AWX" {
   ssh_key         = module.Mgmt_NW.ssh_key
   VaultFile       = data.local_file.vault_file.content
   ConfigPath      = var.ConfigPath
+  CommonMgmtSGID  = module.Mgmt_NW.CommonManagementSG_ID
 }
 
 output "Mgmt_AWX" {

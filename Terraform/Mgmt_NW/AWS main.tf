@@ -85,6 +85,10 @@ output "security_groups" {
   ]
 }
 
+output "CommonManagementSG_ID" {
+  value = aws_security_group.CommonManagementSG.id
+}
+
 resource "aws_security_group_rule" "ServicesSG_HTTP" {
   type = "ingress"
   protocol = "tcp"
